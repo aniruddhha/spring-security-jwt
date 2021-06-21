@@ -29,18 +29,23 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
     private final JwtConfig jwtConfig;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        String authorizationHeader = request.getHeader(jwtConfig.getAuthorizationHeader());
+        String authorizationHeader = request.getHeader(jwtConfig.getAuthorizationHeader()); // extracting Authorization Header
 //        System.out.println(" -------> "+authorizationHeader);
-        if ((authorizationHeader == null || authorizationHeader.isEmpty()) || !authorizationHeader.startsWith(jwtConfig.getTokenPrefix())) {
+        if (
+                (authorizationHeader == null || authorizationHeader.isEmpty()) ||
+                        !authorizationHeader.startsWith(jwtConfig.getTokenPrefix())
+        ) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authorizationHeader.replace(jwtConfig.getTokenPrefix(), "");
+        String token = authorizationHeader.replace(jwtConfig.getTokenPrefix(), ""); // removing word Bearer
 
         try {
 
@@ -51,8 +56,9 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
             Claims body = claimsJws.getBody();
 
             String username = body.getSubject();
-
-            var authorities = (List<Map<String, String>>) body.get("authorities");
+            // ----------------------- above this line JWT World ---------------------------
+            // ----------------------- below this line Spring Security ---------------------------
+            var authorities = (List<Map<String, String>>) body.get("authorities"); //
 
             Set<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities.stream()
                     .map(m -> new SimpleGrantedAuthority(m.get("authority")))

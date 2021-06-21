@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RequestMapping(value = "/addsh")
+@RequestMapping(value = "/admin")
 @RestController
 public class AdminDashboardController {
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public List<String> dashboard() {
         return List.of("about", "home", "analytics");
